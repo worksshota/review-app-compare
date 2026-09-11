@@ -5,7 +5,7 @@ import requests
 import markdown
 from google import genai
 
-# --- 1. Gemini API呼び出し ---
+# --- 1. Gemini API呼び出し (リトライ処理付き) ---
 def call_gemini_with_retry(client: genai.Client, prompt: str, max_retries: int = 3) -> any:
     model_name = 'gemini-3.6-flash'
     for attempt in range(max_retries):
@@ -42,7 +42,7 @@ def generate_compare_article(client: genai.Client, products: list) -> str:
 2. **文章の壁を作らない（改行の徹底）**:
    - 2〜3文ごとに必ず1行の「空行」を挟んでください。
 3. **箇条書き（- ）と太字の多用**:
-   - メリット・デメリットや選び方は必ず箇条書き（`- `）にし、重要単語は **太字** にしてください。
+   - メリット・デメリットや選び方は必ず箇条書き（`- `）にし、重要単語は **太字** で強調してください。
 
 # 記事の構成テンプレート:
 ## 1. 【結論】迷ったらどれを買うべき？
@@ -122,7 +122,9 @@ def main():
         print("エラー: 必要な環境変数が設定されていません。")
         return
 
+    print("--- Gemini API 接続確認 ---")
     client = genai.Client(api_key=gemini_api_key)
+    print("Gemini API 接続成功！")
 
     if not os.path.exists("products.txt"):
         print("products.txt が見つかりません。")
